@@ -98,7 +98,10 @@ getValidation.enter((ctx) => {
             return ctx.scene.leave()
         }
     } else if(ctx.scene.state.setUsername == ctx.update.message.from.username) {
-        ctx.replyWithMarkdown("*You can't review yourself, idiot.* 🤣")
+        if(ctx.scene.state.setMemberScore == true)
+            ctx.replyWithMarkdown("*To find your score use* \`/score\` *instead.* 😤")
+        else
+            ctx.replyWithMarkdown("*You can't review yourself, idiot.* 🤣")
         return ctx.scene.leave()
     } else if(ctx.scene.state.setMemberScore == true)
         return ctx.scene.enter('getScore', ctx.scene.state)
@@ -244,18 +247,17 @@ getLeaderboard.enter((ctx) => {
 
 const getHelp = new Scene('getHelp')
 getHelp.enter((ctx) => {
-    ctx.replyWithMarkdown(`
-*Help*
-\`/review\` - review a Rev(Member). Don't use *@*
+    ctx.replyWithMarkdown(`*Help*
+\`/review\` - review a Rev(Member) without *@*
 \`/score\` - display your score
-\`/search\` - **get a Rev(Member)\'s score**
+\`/search\` - get a Rev(Member)\'s score
 \`/leaderboard\` - display the top 10
 \`/help\` - display this help
 
 🔜 \`/about\` - **bot info**
-🔜 \`/comment_review\` - **review a Rev(Member) and leave a comment**
-🔜 \`/anonymous_review\` - **review a Rev(Member) anonymously**
 🔜 \`/bio\` - **edit Rev(Bio)**
+🔜 \`/anonymous_review\` - **review a Rev(Member) anonymously**
+🔜 \`/comment_review\` - **review a Rev(Member) and leave a comment**
 `)
 })
 
