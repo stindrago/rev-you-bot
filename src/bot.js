@@ -1,9 +1,12 @@
 // Include bot libreries
+
+const Composer = require('telegraf/composer')
 const Telegraf = require('telegraf')
 const session = require('telegraf/session')
 const Markup = require('telegraf/markup')
 const Stage = require('telegraf/stage')
 const Scene = require('telegraf/scenes/base')
+const WizardScene = require('telegraf/scenes/wizard')
 const { leave } = Stage
 
 // Include JS libreries
@@ -55,7 +58,9 @@ getUsername.enter((ctx) => {
         if (err) throw err
         ctx.scene.state.setData = JSON.parse(data.toString())
     })
-    ctx.replyWithMarkdown('**Hello there!** *Who do you want to review?*')
+
+    if(ctx.scene.state.setMemberScore != true)
+        ctx.replyWithMarkdown('**Hello there!** *Who do you want to review?*')
 })
 getUsername.on('text', (ctx) => {
     ctx.scene.state.setUsername = ctx.message.text
@@ -92,10 +97,11 @@ getValidation.enter((ctx) => {
             ctx.session.try++
             return ctx.scene.leave()
         }
-    } else if (ctx.scene.state.setUsername == ctx.update.message.from.username) {
+    } else if(ctx.scene.state.setUsername == ctx.update.message.from.username) {
         ctx.replyWithMarkdown("*You can't review yourself, idiot.* 🤣")
         return ctx.scene.leave()
-    }
+    } else if(ctx.scene.state.setMemberScore == true)
+        return ctx.scene.enter('getScore', ctx.scene.state)
     else
         return ctx.scene.enter('getReview', ctx.scene.state)
 })
@@ -190,9 +196,20 @@ getScore.enter((ctx) => {
         if (err) throw err
 
         ctx.scene.state.setData = JSON.parse(data.toString())
-       
-        ctx.replyWithMarkdown(`*Your score is:* \`${ctx.scene.state.setData.user.find(x => x.username === ctx.update.message.from.username).score}\` 👏`)
+
+        if(ctx.scene.state.setMemberScore == true)
+            ctx.replyWithMarkdown(`*@${ctx.scene.state.setUsername}*\'s score is: \`${ctx.scene.state.setData.user.find(x => x.username === ctx.scene.state.setUsername).score}\` 😉`)
+        else
+            ctx.replyWithMarkdown(`*Your score is:* \`${ctx.scene.state.setData.user.find(x => x.username === ctx.update.message.from.username).score}\` 👏`)
     })
+})
+
+const getMemberScore = new Scene('getMemberScore')
+getMemberScore.enter((ctx) => {
+    ctx.scene.state.setMemberScore = true
+
+    ctx.replyWithMarkdown('**Hello again!** *Whose score are you trying to find?*')
+    return ctx.scene.enter('getUsername', ctx.scene.state)
 })
 
 const getLeaderboard = new Scene('getLeaderboard')
@@ -231,6 +248,7 @@ getHelp.enter((ctx) => {
 *Help*
 \`/review\` - review a Rev(Member). Don't use *@*
 \`/score\` - display your score
+\`/search\` - **get a Rev(Member)\'s score**
 \`/leaderboard\` - display the top 10
 \`/help\` - display this help
 
@@ -238,7 +256,6 @@ getHelp.enter((ctx) => {
 🔜 \`/comment_review\` - **review a Rev(Member) and leave a comment**
 🔜 \`/anonymous_review\` - **review a Rev(Member) anonymously**
 🔜 \`/bio\` - **edit Rev(Bio)**
-🔜 \`/member_search\` - **search for a Rev(Member)**
 `)
 })
 
@@ -253,12 +270,14 @@ const stage = new Stage([getExistentUser,
                          getSave,
                          getScore,
                          getLeaderboard,
-                         getHelp], { ttl: 60 })
+                         getHelp,
+                         getMemberScore], { ttl: 60 })
 
 // Stage commands
 stage.command('cancel', leave())
 stage.command('review', (ctx) => ctx.scene.enter('getUsername'))
 stage.command('score', (ctx) => ctx.scene.enter('getScore'))
+stage.command('search', (ctx) => ctx.scene.enter('getMemberScore'))
 stage.command('leaderboard', (ctx) => ctx.scene.enter('getLeaderboard'))
 stage.command('help', (ctx) => ctx.scene.enter('getHelp'))
 stage.command('help_im_noob', (ctx) => ctx.replyWithMarkdown('*Yes you are.*'))
