@@ -1,0 +1,40 @@
+{
+  "user": [
+    {
+      "firstname": "Costin",
+      "lastname": "Dragoi",
+      "username": "stindrago",
+      "score": 3,
+      "history": [
+        {
+          "timestamp": 1598544484,
+          "from": "zhirtamir",
+          "anonymous": false,
+          "review": 5
+        },
+        {
+          "timestamp": 1598544584,
+          "from": "zhirtamir",
+          "anonymous": false,
+          "review": 1
+        },
+        {
+          "timestamp": 1598544684,
+          "from": "zhirtamir",
+          "anonymous": false,
+          "review": 3
+        }
+      ]
+    },
+      { "firstname" : "Tamir",
+          "lastname" : "Zhir",
+          "username" : "zhirtamir",
+          "score" : 4,
+          "history" : [
+              { "timestamp" : 1598544444, "from" : "stindrago", "anonymous" : false, "review" : 5},
+              { "timestamp" : 1598544544, "from" : "stindrago", "anonymous" : false, "review" : 1},
+              { "timestamp" : 1598544644, "from" : "stindrago", "anonymous" : false, "review" : 3}
+          ]
+        }
+  ]
+}
