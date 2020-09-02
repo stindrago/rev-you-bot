@@ -88,7 +88,7 @@ getValidation.enter((ctx) => {
             return ctx.scene.leave()
         }
         else {
-            ctx.replyWithMarkdown("*User dosen't exist.* 🙁")
+            ctx.replyWithMarkdown("*User dosen't exist.* 🙁 Type `/help`.")
             ctx.session.try++
             return ctx.scene.leave()
         }
