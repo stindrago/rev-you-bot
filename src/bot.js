@@ -212,7 +212,7 @@ getLeaderboard.enter((ctx) => {
             return b[1] - a[1]
         })
 
-        reformattedArray.slice(0, 5).forEach(function(item, index) {
+        reformattedArray.slice(0, 9).forEach(function(item, index) {
             if(index == 0 )
                 ctx.replyWithMarkdown(`🥇 *${index + 1}° place* 🤜 **${item[0]}** 👉 \`${item[1]}\` **`)
             if(index == 1 )
