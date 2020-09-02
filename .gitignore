@@ -1,4 +1,5 @@
 node_modules/
 config.js
-*.json
+data.json
+data.json.bak
 .DS_Store
