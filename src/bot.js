@@ -212,7 +212,7 @@ getScore.enter((ctx) => {
         ctx.scene.state.setData = JSON.parse(data.toString())
 
         if(ctx.scene.state.setMemberScore == true)
-            ctx.replyWithMarkdown(`*${ctx.scene.state.setData.user.find(x => x.username === ctx.update.message.from.username).firstname}*\'s score is: \`${ctx.scene.state.setData.user.find(x => x.username === ctx.scene.state.setUsername).score}\` 😉`)
+            ctx.replyWithMarkdown(`*${ctx.scene.state.setData.user.find(x => x.username === ctx.scene.state.setUsername).firstname}*\'s score is: \`${ctx.scene.state.setData.user.find(x => x.username === ctx.scene.state.setUsername).score}\` 😉`)
         else
             ctx.replyWithMarkdown(`*Your score is:* \`${ctx.scene.state.setData.user.find(x => x.username === ctx.update.message.from.username).score}\` 👏`)
     })
