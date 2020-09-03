@@ -212,7 +212,7 @@ getScore.enter((ctx) => {
         ctx.scene.state.setData = JSON.parse(data.toString())
 
         if(ctx.scene.state.setMemberScore == true)
-            ctx.replyWithMarkdown(`*@${ctx.scene.state.setUsername}*\'s score is: \`${ctx.scene.state.setData.user.find(x => x.username === ctx.scene.state.setUsername).score}\` 😉`)
+            ctx.replyWithMarkdown(`*${ctx.scene.state.setData.user.find(x => x.username === ctx.update.message.from.username).firstname}*\'s score is: \`${ctx.scene.state.setData.user.find(x => x.username === ctx.scene.state.setUsername).score}\` 😉`)
         else
             ctx.replyWithMarkdown(`*Your score is:* \`${ctx.scene.state.setData.user.find(x => x.username === ctx.update.message.from.username).score}\` 👏`)
     })
@@ -245,14 +245,38 @@ getLeaderboard.enter((ctx) => {
 
         reformattedArray.slice(0, 9).forEach(function(item, index) {
             if(index == 0 )
-                ctx.replyWithMarkdown(`🥇 *${index + 1}° place* 🤜 **${item[0]}** 👉 \`${item[1]}\` **`)
+                ctx.replyWithMarkdown(`🥇 *${index + 1}° place* 🤜 @${item[0]} 👉 \`${item[1]}\``)
             if(index == 1 )
-                ctx.replyWithMarkdown(`🥈 *${index + 1}° place* 🤜 **${item[0]}** 👉 \`${item[1]}\` **`)
+                ctx.replyWithMarkdown(`🥈 *${index + 1}° place* 🤜 @${item[0]} 👉 \`${item[1]}\``)
             if(index == 2 )
-                ctx.replyWithMarkdown(`🥉 *${index + 1}° place* 🤜 **${item[0]}** 👉 \`${item[1]}\` **`)
+                ctx.replyWithMarkdown(`🥉 *${index + 1}° place* 🤜 @${item[0]} 👉 \`${item[1]}\``)
             if(index > 2)
-                ctx.replyWithMarkdown(`*${index + 1}° place* 🤜 **${item[0]}** 👉 \`${item[1]}\` **`)
+                ctx.replyWithMarkdown(`*${index + 1}° place* 🤜 @${item[0]} 👉 \`${item[1]}\``)
         })
+    })
+})
+
+const getMembers = new Scene('getMembers')
+getMembers.enter((ctx) => {
+    fs.readFile('../resources/data.json', 'utf-8', (err, data) => {
+        if (err) throw err
+
+        parsed = JSON.parse(data)
+
+        let reformattedArray = parsed.user.map(obj => {
+            let rObj = []
+            rObj = [obj.username, obj.score]
+            return rObj
+        })
+
+        reformattedArray.sort(function(a, b) {
+            return a[0] - b[0]
+        })
+
+        reformattedArray.forEach(function(item) {
+            ctx.replyWithMarkdown(`🤜 @${item[0]} 👉 \`${item[1]}\``)
+        })
+      
     })
 })
 
@@ -261,8 +285,9 @@ getHelp.enter((ctx) => {
     ctx.replyWithMarkdown(`*Help*
 \`/review\` - review a Rev(Member) without *@*
 \`/score\` - display your score
-\`/search\` - get a Rev(Member)\'s score
 \`/leaderboard\` - display the top 10
+\`/members\` - display all Rev(Members)
+\`/search\` - get a Rev(Member)\'s score
 \`/help\` - display this help
 
 👉 *All reviews are displayed at:* [t.me/revfeedchan](https://t.me/revfeedchan)
@@ -272,6 +297,7 @@ getHelp.enter((ctx) => {
 🔜 \`/anonymous_review\` - **review a Rev(Member) anonymously**
 🔜 \`/comment_review\` - **review a Rev(Member) and leave a comment**
 `)
+    return ctx.scene.leave()
 })
 
 
@@ -287,14 +313,16 @@ const stage = new Stage([
     getScore,
     getLeaderboard,
     getHelp,
-    getMemberScore], { ttl: 60 })
+    getMemberScore,
+    getMembers], { ttl: 60 })
 
 // Stage commands
 stage.command('cancel', leave())
 stage.command('review', (ctx) => ctx.scene.enter('getUsername'))
 stage.command('score', (ctx) => ctx.scene.enter('getScore'))
-stage.command('search', (ctx) => ctx.scene.enter('getMemberScore'))
 stage.command('leaderboard', (ctx) => ctx.scene.enter('getLeaderboard'))
+stage.command('members', (ctx) => ctx.scene.enter('getMembers'))
+stage.command('search', (ctx) => ctx.scene.enter('getMemberScore'))
 stage.command('help', (ctx) => ctx.scene.enter('getHelp'))
 stage.command('help_im_noob', (ctx) => ctx.replyWithMarkdown('*Yes you are.*'))
 
