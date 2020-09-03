@@ -1,12 +1,11 @@
 // Include bot libreries
 
-const Composer = require('telegraf/composer')
-const Telegraf = require('telegraf')
-const session = require('telegraf/session')
 const Markup = require('telegraf/markup')
-const Stage = require('telegraf/stage')
 const Scene = require('telegraf/scenes/base')
-const WizardScene = require('telegraf/scenes/wizard')
+const session = require('telegraf/session')
+const Stage = require('telegraf/stage')
+const Telegraf = require('telegraf')
+const Telegram = require('telegraf/telegram')
 const { leave } = Stage
 
 // Include JS libreries
@@ -17,6 +16,8 @@ const config = require('./config') // Configuration file that holds telegraf_tok
 //const data = require('../resources/data.json') // User Data
 
 const bot = new Telegraf(config.telegraf_token)
+const revfeedbot = new Telegram(config.telegraf_token)
+const feedChannelId = config.feedChannelId
 
 const getExistentUser = new Scene('getExistentUser')
 getExistentUser.enter((ctx) => {
@@ -151,16 +152,26 @@ getHistory.enter((ctx) => {
 
     ctx.scene.state.setHistory = history
 
-    if(ctx.scene.state.setReview == 5)
+    if(ctx.scene.state.setReview == 5) {
+        revfeedbot.sendMessage(feedChannelId, `@${ctx.update.callback_query.from.username} reviewed 🤜 @${ctx.scene.state.setUsername} 👉 ⭐⭐⭐⭐⭐️ - 😍`)
         ctx.editMessageText(`You reviewed @${ctx.scene.state.setUsername}: ⭐⭐⭐⭐⭐️ - 😍`)
-    else if(ctx.scene.state.setReview == 4)
+    }
+    else if(ctx.scene.state.setReview == 4) {
+        revfeedbot.sendMessage(feedChannelId, `@${ctx.update.callback_query.from.username} reviewed 🤜 @${ctx.scene.state.setUsername} 👉 ⭐⭐⭐⭐️ - 🥺`)
         ctx.editMessageText(`You reviewed @${ctx.scene.state.setUsername}: ⭐⭐⭐⭐️ - 🥺`)
-    else if(ctx.scene.state.setReview == 3)
+    }
+    else if(ctx.scene.state.setReview == 3) {
+        revfeedbot.sendMessage(feedChannelId, `@${ctx.update.callback_query.from.username} reviewed 🤜 @${ctx.scene.state.setUsername} 👉 ⭐⭐⭐️ - 🤧`)
         ctx.editMessageText(`You reviewed @${ctx.scene.state.setUsername}: ⭐⭐⭐️ - 🤧`)
-    else if(ctx.scene.state.setReview == 2)
+    }
+    else if(ctx.scene.state.setReview == 2) {
+        revfeedbot.sendMessage(feedChannelId, `@${ctx.update.callback_query.from.username} reviewed 🤜 @${ctx.scene.state.setUsername} 👉 ⭐⭐️ - 🤢`)
         ctx.editMessageText(`You reviewed @${ctx.scene.state.setUsername}: ⭐⭐️ - 🤢`)
-    else if(ctx.scene.state.setReview == 1)
+    }
+    else if(ctx.scene.state.setReview == 1) {
+        revfeedbot.sendMessage(feedChannelId, `@${ctx.update.callback_query.from.username} reviewed 🤜 @${ctx.scene.state.setUsername} 👉 ⭐️ - 🤮`)
         ctx.editMessageText(`You reviewed @${ctx.scene.state.setUsername}: ⭐️ - 🤮`)
+    }
 
     return ctx.scene.enter('getSave', ctx.scene.state)
 })
@@ -254,6 +265,8 @@ getHelp.enter((ctx) => {
 \`/leaderboard\` - display the top 10
 \`/help\` - display this help
 
+👉 *All reviews are displayed at:* [t.me/revfeedchan](https://t.me/revfeedchan)
+
 🔜 \`/about\` - **bot info**
 🔜 \`/bio\` - **edit Rev(Bio)**
 🔜 \`/anonymous_review\` - **review a Rev(Member) anonymously**
@@ -263,17 +276,18 @@ getHelp.enter((ctx) => {
 
 
 // Create scene manager
-const stage = new Stage([getExistentUser,
-                         getNewUser,
-                         getUsername,
-                         getValidation,
-                         getReview,
-                         getHistory,
-                         getSave,
-                         getScore,
-                         getLeaderboard,
-                         getHelp,
-                         getMemberScore], { ttl: 60 })
+const stage = new Stage([
+    getExistentUser,
+    getNewUser,
+    getUsername,
+    getValidation,
+    getReview,
+    getHistory,
+    getSave,
+    getScore,
+    getLeaderboard,
+    getHelp,
+    getMemberScore], { ttl: 60 })
 
 // Stage commands
 stage.command('cancel', leave())
