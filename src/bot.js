@@ -186,8 +186,8 @@ getSave.enter((ctx) => {
         ctx.scene.state.setData.user.find(x => x.username === ctx.scene.state.setUsername)
            .history.unshift(ctx.scene.state.setHistory)
 
-        let sum = 0
-        let i = 0
+        let sum = 5
+        let i = 1
 
         // iterate over object values
         Object.values(ctx.scene.state.setData.user.find(x => x.username === ctx.scene.state.setUsername).history)
