@@ -18,7 +18,7 @@
    - open `config.js` with your favorite editor
      - Replace `TOKEN` with the **API TOKEN** got from Bot Father
      - Replace '0' with the **ChatID** of your feed channel
-       - Get the ID: `curl -X POST "https://api.telegram.org/bot<TOKEN>/sendMessage" -d "chat_id=@<ChatID>**&text=hi"`
+       - Get the ID: `curl -X POST "https://api.telegram.org/bot<TOKEN>/sendMessage" -d "chat_id=@<ChatID>&text=hi"`
        - copy/paste the Chat ID
 1. Install required modules
    - `npm i`
