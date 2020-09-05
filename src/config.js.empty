@@ -1,0 +1,2 @@
+module.exports = {telegraf_token:'TOKEN',
+                 feedChannelId:'0'};
