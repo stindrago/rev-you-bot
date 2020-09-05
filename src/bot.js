@@ -23,7 +23,7 @@ const getExistentUser = new Scene('getExistentUser')
 getExistentUser.enter((ctx) => {
     ctx.replyWithMarkdown('*Welcome back to* `Rev(You)`!  🎉🎉🎉')
     ctx.replyWithMarkdown('*Remember! Your score can be influenced by other* `Rev(Members)`.')
-    ctx.replyWithMarkdown(`*Your score is:* \`${ctx.scene.state.setData.user.find(x => x.username === ctx.update.message.from.username).score}\` 👏`)
+    ctx.replyWithMarkdown(`*Your score is:* \`${ctx.scene.state.setData.user.find(x => x.id === ctx.update.message.from.id).score}\` 👏`)
 })
 
 const getNewUser = new Scene('getNewUser')
@@ -33,7 +33,8 @@ getNewUser.enter((ctx) => {
         if (err) throw err
 
         // create a JSON object
-        const newUser = { "firstname" : ctx.update.message.from.first_name,
+        const newUser = { "id" : ctx.update.message.from.id,
+                          "firstname" : ctx.update.message.from.first_name,
                           "lastname" : ctx.update.message.from.last_name,
                           "username" : ctx.update.message.from.username,
                           "score" : 5,
@@ -64,7 +65,7 @@ getUsername.enter((ctx) => {
         ctx.replyWithMarkdown('**Hello there!** *Who do you want to review?*')
 })
 getUsername.on('text', (ctx) => {
-    ctx.scene.state.setUsername = ctx.message.text
+    ctx.scene.state.setUsername = ctx.message.text.replace('@','')
     return ctx.scene.enter('getValidation', ctx.scene.state)
 })
 
@@ -73,7 +74,7 @@ getValidation.enter((ctx) => {
     ctx.session.try = ctx.session.try || 0
 
     if(ctx.scene.state.setData.user.find(u => u.username === ctx.scene.state.setUsername) == undefined) {
-        if(ctx.scene.state.setUsername == "me"){
+        if(ctx.scene.state.setUsername == "me") {
             ctx.replyWithMarkdown("*Are you stupid?* 🤨")
             return ctx.scene.leave()
         }
@@ -98,7 +99,7 @@ getValidation.enter((ctx) => {
             ctx.session.try++
             return ctx.scene.leave()
         }
-    } else if(ctx.scene.state.setUsername == ctx.update.message.from.username) {
+    } else if(ctx.scene.state.setData.user.find(u => u.username === ctx.scene.state.setUsername).username == ctx.update.message.from.username) {
         if(ctx.scene.state.setMemberScore == true)
             ctx.replyWithMarkdown("*To find your score use* \`/score\` *instead.* 😤")
         else
@@ -113,13 +114,13 @@ getValidation.enter((ctx) => {
 const getReview = new Scene('getReview')
 getReview.enter((ctx) => {
     ctx.replyWithMarkdown('*How many stars?*',
-              Markup.inlineKeyboard([
-                  Markup.callbackButton('《 1', 'key_one'),
-                  Markup.callbackButton('〈 2', 'key_two'),
-                  Markup.callbackButton('· 3 ·', 'key_three'),
-                  Markup.callbackButton('4 〉', 'key_four'),
-                  Markup.callbackButton('5 》', 'key_five')
-              ]).extra())
+                          Markup.inlineKeyboard([
+                              Markup.callbackButton('《 1', 'key_one'),
+                              Markup.callbackButton('〈 2', 'key_two'),
+                              Markup.callbackButton('· 3 ·', 'key_three'),
+                              Markup.callbackButton('4 〉', 'key_four'),
+                              Markup.callbackButton('5 》', 'key_five')
+                          ]).extra())
 })
 getReview.action('key_one', (ctx) => {
     ctx.scene.state.setReview = 1
@@ -147,7 +148,7 @@ getHistory.enter((ctx) => {
     const history = { "timestamp" : null, "from" : null, "anonymous" : false, "review" : null}
 
     history.timestamp = Math.floor(Date.now() / 1000)
-    history.from = ctx.update.callback_query.from.username
+    history.from = ctx.update.callback_query.from.id
     history.review = ctx.scene.state.setReview
 
     ctx.scene.state.setHistory = history
@@ -196,7 +197,7 @@ getSave.enter((ctx) => {
               })
 
         ctx.scene.state.setData.user.find(x => x.username === ctx.scene.state.setUsername).score = (Math.round((sum/i) * 100) / 100)
-   
+
         fs.writeFile('../resources/data.json', JSON.stringify(ctx.scene.state.setData, null, 4), (err) => {
             if (err) throw err
             console.log("JSON data is saved.")
@@ -212,9 +213,9 @@ getScore.enter((ctx) => {
         ctx.scene.state.setData = JSON.parse(data.toString())
 
         if(ctx.scene.state.setMemberScore == true)
-            ctx.replyWithMarkdown(`*${ctx.scene.state.setData.user.find(x => x.username === ctx.scene.state.setUsername).firstname}*\'s score is: \`${ctx.scene.state.setData.user.find(x => x.username === ctx.scene.state.setUsername).score}\` 😉`)
+            ctx.replyWithMarkdown(`@${ctx.scene.state.setData.user.find(x => x.username === ctx.scene.state.setUsername).username}\'s score is: \`${ctx.scene.state.setData.user.find(x => x.username === ctx.scene.state.setUsername).score}\` 😉`)
         else
-            ctx.replyWithMarkdown(`*Your score is:* \`${ctx.scene.state.setData.user.find(x => x.username === ctx.update.message.from.username).score}\` 👏`)
+            ctx.replyWithMarkdown(`*Your score is:* \`${ctx.scene.state.setData.user.find(x => x.id === ctx.update.message.from.id).score}\` 👏`)
     })
 })
 
@@ -276,21 +277,23 @@ getMembers.enter((ctx) => {
         reformattedArray.forEach(function(item) {
             ctx.replyWithMarkdown(`🤜 @${item[0]} 👉 \`${item[1]}\``)
         })
-      
+
     })
 })
 
 const getHelp = new Scene('getHelp')
 getHelp.enter((ctx) => {
     ctx.replyWithMarkdown(`*Help*
-\`/review\` - review a Rev(Member) without *@*
+*@revyoubot is your personal assistant to influence people's behaviour. To start find the username of the person you want to review and type* \`/review\`*. Play with the rest of the commands to see what the bot can do.*
+
+\`/review\` - review a Rev(Member) by username
 \`/score\` - display your score
 \`/leaderboard\` - display the top 10
 \`/members\` - display all Rev(Members)
 \`/search\` - get a Rev(Member)\'s score
 \`/help\` - display this help
 
-👉 *All reviews are displayed at:* [t.me/revfeedchan](https://t.me/revfeedchan)
+👉 *All reviews are displayed live at:* [t.me/revfeedchan](https://t.me/revfeedchan)
 
 🔜 \`/about\` - **bot info**
 🔜 \`/bio\` - **edit Rev(Bio)**
@@ -318,13 +321,31 @@ const stage = new Stage([
 
 // Stage commands
 stage.command('cancel', leave())
-stage.command('review', (ctx) => ctx.scene.enter('getUsername'))
-stage.command('score', (ctx) => ctx.scene.enter('getScore'))
-stage.command('leaderboard', (ctx) => ctx.scene.enter('getLeaderboard'))
-stage.command('members', (ctx) => ctx.scene.enter('getMembers'))
-stage.command('search', (ctx) => ctx.scene.enter('getMemberScore'))
-stage.command('help', (ctx) => ctx.scene.enter('getHelp'))
-stage.command('help_im_noob', (ctx) => ctx.replyWithMarkdown('*Yes you are.*'))
+stage.command('review', (ctx) => {
+    checkUsername(ctx)
+    ctx.scene.enter('getUsername')
+})
+stage.command('score', (ctx) => {
+    checkUsername(ctx)
+    ctx.scene.enter('getScore')
+})
+stage.command('leaderboard', (ctx) => {
+    checkUsername(ctx)
+    ctx.scene.enter('getLeaderboard')
+})
+stage.command('members', (ctx) => {
+    checkUsername(ctx)
+    ctx.scene.enter('getMembers')
+})
+stage.command('search', (ctx) => {
+    checkUsername(ctx)
+    ctx.scene.enter('getMemberScore')
+})
+stage.command('help', (ctx) => {
+    checkUsername(ctx)
+    ctx.scene.enter('getHelp')
+})
+stage.command('help_im_noob', (ctx) => ctx.replyWithMarkdown('*There\'s nothing I can do for you.*'))
 
 // Bot Commands
 bot.use(session())
@@ -335,11 +356,35 @@ bot.start((ctx) => {
         if (err) throw err
         ctx.scene.state.setData = JSON.parse(data.toString())
 
-        if(ctx.scene.state.setData.user.find(u => u.username === ctx.update.message.from.username) == undefined)
+        if(ctx.scene.state.setData.user.find(u => u.id === ctx.update.message.from.id) == undefined)
             ctx.scene.enter('getNewUser')
         else
             ctx.scene.enter('getExistentUser', ctx.scene.state)
     })
 })
 
+bot.on('message', (ctx) =>{
+    ctx.replyWithMarkdown('Type `/help`')
+    return leave()
+})
+
 bot.launch()
+
+function checkUsername(ctx) {
+    fs.readFile('../resources/data.json', 'utf-8', (err, data) => {
+        if (err) throw err
+        ctx.scene.state.setData = JSON.parse(data.toString())
+
+        if(ctx.scene.state.setData.user.find(u => u.id === ctx.update.message.from.id) == undefined)
+            ctx.scene.enter('getNewUser')
+        else {
+            if(ctx.scene.state.setData.user.find(u => u.id === ctx.update.message.from.id).username != ctx.update.message.from.username)
+                ctx.scene.state.setData.user.find(u => u.id === ctx.update.message.from.id).username = ctx.update.message.from.username
+
+            fs.writeFile('../resources/data.json', JSON.stringify(ctx.scene.state.setData, null, 4), (err) => {
+                if (err) throw err
+                console.log("JSON data is saved.")
+            })
+        }
+    })
+}
