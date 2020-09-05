@@ -1,4 +1,6 @@
 # Rev(You)
+Telegram bot to review people.  
+Using [https://telegraf.js.org](telegraf) with [Node.js](https://nodejs.org/en/)
 
 ## Ty it yourself
 
@@ -17,11 +19,19 @@
    - `cp config.js.empty config.js`
    - open `config.js` with your favorite editor
      - Replace `TOKEN` with the **API TOKEN** got from Bot Father
-     - Replace '0' with the **ChatID** of your feed channel
+     - Replace `0` with the **ChatID** of your feed channel
        - Get the ID: `curl -X POST "https://api.telegram.org/bot<TOKEN>/sendMessage" -d "chat_id=@<ChatID>&text=hi"`
        - copy/paste the Chat ID
 1. Install required modules
    - `npm i`
 1. Run
    - `node index.js`
+   
+## Contribute
+The code needs more documentation and some cleaning.  
+To contribute find issues and if you know JavaScript send pull requests.  
+Any help is appreciated.  
+
+## License
+Free Software (GPLv3)
    
