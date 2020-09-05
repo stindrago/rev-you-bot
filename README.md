@@ -1,6 +1,6 @@
 # Rev(You)
 Telegram bot to review people.  
-Using [https://telegraf.js.org](telegraf) with [Node.js](https://nodejs.org/en/)
+Using [telegraf](https://telegraf.js.org) with [Node.js](https://nodejs.org/en/)
 
 ## Ty it yourself
 
