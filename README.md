@@ -35,7 +35,7 @@ Using [telegraf](https://telegraf.js.org) with [Node.js](https://nodejs.org/en/)
    - `npm i`
 1. Run
    - `node index.js`
-   
+
 ## Deploy
 
 Instead of just running `node index.js` in the terminal, run it in background.
@@ -43,9 +43,9 @@ Instead of just running `node index.js` in the terminal, run it in background.
 1. `cd /opt`.
 1. Do the steps above.
 1. Install _pm2_
-  - `npm install pm2 -g`.
+   - `npm install pm2 -g`.
 1. Start the node app
-  - `pm2 start index.js`.
+   - `pm2 start index.js`.
 
 You can view logs with `pm2 logs`.
 
