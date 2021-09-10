@@ -1,5 +1,7 @@
 # Rev(You)
-Telegram bot to review people.  
+
+Telegram bot to review people.
+
 Using [telegraf](https://telegraf.js.org) with [Node.js](https://nodejs.org/en/)
 
 ## Ty it yourself
@@ -10,28 +12,52 @@ Using [telegraf](https://telegraf.js.org) with [Node.js](https://nodejs.org/en/)
    - [node.js](https://nodejs.org/en/)
    - [git](https://git-scm.com)
 1. Download repository
-   - `git clone https://github.com/stindrago/rev-you-bot.git`
+   - `git clone https://github.com/stindrago/rev-you-bot.git`.
 1. Init database
-   - `cd rev-you-bot/resources`
-   - `cp data.json.empty data.json`
+   - `cd rev-you-bot/resources`.
+   - `cp data.json.empty data.json`.
 1. Edit bot configuration
-   - `cd ../src`
-   - `cp config.js.empty config.js`
-   - open `config.js` with your favorite editor
-     - Replace `TOKEN` with the **API TOKEN** got from Bot Father
+   - `cd ../src`.
+   - `cp config.js.empty config.js`.
+   - open `config.js` with your favorite editor.
+     - Replace `TOKEN` with the **API TOKEN** of your bot got from Bot Father.
      - Replace `0` with the **ChatID** of your feed channel
-       - Get the ID: `curl -X POST "https://api.telegram.org/bot<TOKEN>/sendMessage" -d "chat_id=@<ChatID>&text=hi"`
+       - Get the Channel ID
+         1. Go to https://web.telegram.org.
+         1. Click on your channel.
+         1. Look at the URL and find the part that looks like `#-1234567890/12`.
+         1. Remove the `#`: like `-1234567890/12`.
+         1. Remove what follows and the `/`: like `-1234567890`.
+         1. Add a prefix of `100` after `-`: like `-1001234567890`.
+         1. That's your channel id.
        - copy/paste the Chat ID
 1. Install required modules
    - `npm i`
 1. Run
    - `node index.js`
    
+## Deploy
+
+Instead of just running `node index.js` in the terminal, run it in background.
+
+1. `cd /opt`.
+1. Do the steps above.
+1. Install _pm2_
+  - `npm install pm2 -g`.
+1. Start the node app
+  - `pm2 start index.js`.
+
+You can view logs with `pm2 logs`.
+
 ## Contribute
-The code needs more documentation and some cleaning.  
-To contribute find issues and if you know JavaScript send pull requests.  
-Any help is appreciated.  
+
+The code needs more documentation and some cleaning.
+
+To contribute find issues and if you know JavaScript send pull requests.
+
+Any help is appreciated.
 
 ## License
+
 Free Software (GPLv3)
    
