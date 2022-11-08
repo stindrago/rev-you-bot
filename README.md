@@ -12,7 +12,7 @@ Using [telegraf](https://telegraf.js.org) with [Node.js](https://nodejs.org/en/)
    - [node.js](https://nodejs.org/en/)
    - [git](https://git-scm.com)
 1. Download repository
-   - `git clone https://github.com/stindrago/rev-you-bot.git`.
+   - `git clone https://git.dragoi.me/costin/rev-you-bot.git`.
 1. Init database
    - `cd rev-you-bot/resources`.
    - `cp data.json.empty data.json`.
